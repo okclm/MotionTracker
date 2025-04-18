@@ -1,17 +1,21 @@
 ﻿using MelonLoader;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Il2CppInterop;
 using Il2CppInterop.Runtime.Injection;
 using System.Collections;
 using Il2Cpp;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using static Il2CppSystem.Net.ServicePointManager;
 
 
 namespace MotionTracker
 {
-	public class MotionTrackerMain : MelonMod
+    public class MotionTrackerMain : MelonMod
 	{
         public static AssetBundle assetBundle;
+        public static AssetBundle assetBundle2;
         public static GameObject motionTrackerParent;
         public static PingManager activePingManager;
 
@@ -20,20 +24,33 @@ namespace MotionTracker
 
         public static GameObject modSettingPage;
 
-        public static Dictionary<PingManager.AnimalType, GameObject> animalPingPrefabs = new Dictionary<PingManager.AnimalType, GameObject>();
+        public static Dictionary<PingManager.AnimalType, GameObject> animalPingPrefabs = new Dictionary<PingManager.AnimalType, GameObject>();  // The dictionary of animal prefabs is instantiated (again!?) in FirstTimeSetup.
+        // public static Dictionary<PingManager.AnimalType, GameObject>? animalPingPrefabs;
         public static Dictionary<ProjectileType, GameObject> spraypaintPingPrefabs = new Dictionary<ProjectileType, GameObject>();
+
+        public void LogMessage(string message, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string? caller = null, [CallerFilePath] string? filepath = null)
+        {
+#if DEBUG
+            MelonLogger.Msg(Path.GetFileName(filepath) + ":" + caller + "." + lineNumber + ": " + message);
+#endif
+        }
 
         public override void OnInitializeMelon()
         {
+            #if DEBUG
+                LogMessage("Initializing Melon.");
+            #endif
+
             ClassInjector.RegisterTypeInIl2Cpp<TweenManager>();
             ClassInjector.RegisterTypeInIl2Cpp<PingManager>();
             ClassInjector.RegisterTypeInIl2Cpp<PingComponent>();
             LoadEmbeddedAssetBundle();
+            LoadEmbeddedAssetBundle2();
 
             MotionTracker.Settings.OnLoad();
         }
 
-        public static void LoadEmbeddedAssetBundle()
+        public static void LoadEmbeddedAssetBundle()    // Orginal AssetBundle with original prefabs
         {
             MemoryStream memoryStream;
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MotionTracker.Resources.motiontracker");
@@ -43,25 +60,60 @@ namespace MotionTracker
             assetBundle = AssetBundle.LoadFromMemory(memoryStream.ToArray());
 
         }
+        public static void LoadEmbeddedAssetBundle2()   // Additional AssetBundle with additional prefabs (Cougar, Arrow, Coal, Raw Fish, Lost and Found Box)
+        {
+            MemoryStream memoryStream;
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MotionTracker.Resources.motiontrackerassetbundleprefab");
+            memoryStream = new MemoryStream((int)stream.Length);
+            stream.CopyTo(memoryStream);
+
+            assetBundle2 = AssetBundle.LoadFromMemory(memoryStream.ToArray());
+
+        }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
 		{
-            if(sceneName.Contains("MainMenu"))
+#if DEBUG
+            //LogMessage($"Scene {sceneName} with build index {buildIndex} has been loaded.");    // CLM
+#endif
+            if (sceneName.Contains("MainMenu"))
             {
                 //SCRIPT_InterfaceManager/_GUI_Common/Camera/Anchor/Panel_OptionsMenu/Pages/ModSettings/GameObject/ScrollPanel/Offset/
-
+#if DEBUG
+                // LogMessage("Scene name containing MainMenu " + sceneName + " was loaded.");
+#endif
                 PingManager.inMenu = true;
-
-
+                
                 FirstTimeSetup();
             }
             else if (sceneName.Contains("SANDBOX") && motionTrackerParent)
             {
+
+#if DEBUG
+                    // LogMessage("Scene name containing SANDBOX " + sceneName + " was loaded.");
+#endif
+
                 if (PingManager.instance)
                 {
                     PingManager.instance.ClearIcons();
-                    PingManager.inMenu = false;
                 }
+                PingManager.inMenu = false;
+            }
+            else
+            {
+#if DEBUG
+                // LogMessage("Non-Menu and Non-Sandbox scene " + sceneName + " was loaded.");
+#endif
+                // This is a scene that doesn't have "MainMenu" or "Sandbox" in the name.
+                // The original MotionTracker was focused on animals and spraypaint decals.
+                // This scene name could be something like "CanneryTrailerA_DLC01" (the trailer in the BI cannery yard).  And if we have stuff on the radar from the previous scene,
+                // we should reset that.
+                if (PingManager.instance)
+                
+                {
+                    PingManager.instance.ClearIcons();
+                }
+                PingManager.inMenu = false;
             }
         }
 
@@ -77,16 +129,23 @@ namespace MotionTracker
 
                 GameObject prefabSafe = new GameObject("PrefabSafe");
                 prefabSafe.transform.parent = motionTrackerParent.transform;
-                animalPingPrefabs = new Dictionary<PingManager.AnimalType, GameObject>();
+                animalPingPrefabs = new Dictionary<PingManager.AnimalType, GameObject>();   // Instantiate (again!?) the dictionary of animal prefabs.
                 animalPingPrefabs.Add(PingManager.AnimalType.Crow, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("crow"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.Rabbit, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("rabbit"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.Wolf, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wolf"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.Timberwolf, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("timberwolf"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.Bear, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("bear"), prefabSafe.transform));
+                animalPingPrefabs.Add(PingManager.AnimalType.Cougar, GameObject.Instantiate(assetBundle2.LoadAsset<GameObject>("cougar"), prefabSafe.transform));  
                 animalPingPrefabs.Add(PingManager.AnimalType.Moose, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("moose"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.Stag, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("stag"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.Doe, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("doe"), prefabSafe.transform));
                 animalPingPrefabs.Add(PingManager.AnimalType.PuffyBird, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("ptarmigan"), prefabSafe.transform));
+
+                // Note these are additional prefabs from the second asset bundle.
+                animalPingPrefabs.Add(PingManager.AnimalType.Arrow, GameObject.Instantiate(assetBundle2.LoadAsset<GameObject>("arrow"), prefabSafe.transform));  
+                animalPingPrefabs.Add(PingManager.AnimalType.Coal, GameObject.Instantiate(assetBundle2.LoadAsset<GameObject>("coal"), prefabSafe.transform));  
+                animalPingPrefabs.Add(PingManager.AnimalType.RawFish, GameObject.Instantiate(assetBundle2.LoadAsset<GameObject>("rawcohosalmon"), prefabSafe.transform));
+                animalPingPrefabs.Add(PingManager.AnimalType.LostAndFoundBox, GameObject.Instantiate(assetBundle2.LoadAsset<GameObject>("lostandfound"), prefabSafe.transform));
 
                 spraypaintPingPrefabs = new Dictionary<ProjectileType, GameObject>();
                 spraypaintPingPrefabs.Add(ProjectileType.SprayPaint_Direction, GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("SprayPaint_Direction"), prefabSafe.transform));
@@ -128,7 +187,7 @@ namespace MotionTracker
 
         public override void OnUpdate()
 		{
-            if(Settings.options.displayStyle == Settings.DisplayStyle.Toggle)
+            if (Settings.options.displayStyle == Settings.DisplayStyle.Toggle)
             {
                 if (InputManager.GetKeyDown(InputManager.m_CurrentContext, Settings.options.toggleKey))
                 {

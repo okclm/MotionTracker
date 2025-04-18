@@ -97,6 +97,10 @@ namespace MotionTracker
         [Description("Track motion of bears")]
         public bool showBears = true;
 
+        [Name("Show Cougars")]
+        [Description("Track motion of cougars")]
+        public bool showCougars = true;
+
         [Name("Show Moose")]
         [Description("Track motion of moose")]
         public bool showMoose = true;
@@ -105,6 +109,35 @@ namespace MotionTracker
         [Description("Track motion of puffy birds")]
         public bool showPuffyBirds = true;
 
+        // TODO: Add gear icon scale and opacity
+
+        //[Name("Gear Icon Scale")]
+        //[Description("Scale of gear icons")]
+        //[Slider(0, 5)]
+        //public float gearScale = 3.5f;
+
+        //[Name("Gear Icon Opacity")]
+        //[Description("Opacity of gear icons")]
+        //[Slider(0, 1)]
+        //public float gearOpacity = 0.8f;
+
+        [Section("Gear")]
+
+        [Name("Show Arrows")]
+        [Description("Show Arrows on radar")]
+        public bool showArrows = true;
+
+        [Name("Show Coal")]
+        [Description("Show Coal on radar")]
+        public bool showCoal = true;
+
+        [Name("Show Raw Fish")]
+        [Description("Show Raw Fish on radar")]
+        public bool showRawFish = true;
+
+        [Name("Show Lost and Found Box")]
+        [Description("Show Lost and Found Box on radar")]
+        public bool showLostAndFoundBox = true;
 
         protected override void OnChange(FieldInfo field, object oldValue, object newValue)
         {
@@ -118,6 +151,8 @@ namespace MotionTracker
             {  
                 PingManager.instance.SetOpacity(Settings.options.opacity);
                 PingManager.instance.Scale(Settings.options.scale);
+
+                // TODO: Add gear icon scale and opacity
 
                 Settings.animalScale = new Vector3(Settings.options.animalScale, Settings.options.animalScale, Settings.options.animalScale);
                 Settings.spraypaintScale = new Vector3(Settings.options.spraypaintScale, Settings.options.spraypaintScale, Settings.options.spraypaintScale);
@@ -147,6 +182,8 @@ namespace MotionTracker
         {
             options = new MotionTrackerSettings();
             options.AddToModSettings("Motion Tracker");
+
+            // TODO: Add gear icon scale and opacity
 
             animalScale = new Vector3(options.animalScale, options.animalScale, options.animalScale);
             spraypaintScale = new Vector3(options.spraypaintScale, options.spraypaintScale, options.spraypaintScale);
