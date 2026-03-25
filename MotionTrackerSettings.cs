@@ -7,8 +7,10 @@ using System.Reflection;
 namespace MotionTracker
 {
     internal class MotionTrackerSettings : JsonModSettings
-    {     
-		[Section("General")]
+    {
+        //[Section("General - Version: 1.2.0")]
+        //[Section("General - Version: " + Assembly.GetExecutingAssembly().GetName().Version)]
+        [Section("General")]
 
         [Name("Enable Motion Tracker")]
         [Description("Enable/Disable Motion Tracker")]
@@ -109,19 +111,19 @@ namespace MotionTracker
         [Description("Track motion of puffy birds")]
         public bool showPuffyBirds = true;
 
+        [Section("Gear")]
+
         // TODO: Add gear icon scale and opacity
 
-        //[Name("Gear Icon Scale")]
-        //[Description("Scale of gear icons")]
-        //[Slider(0, 5)]
-        //public float gearScale = 3.5f;
+        [Name("Gear Icon Scale")]
+        [Description("Scale of gear icons")]
+        [Slider(0, 5)]
+        public float gearScale = 3.5f;
 
-        //[Name("Gear Icon Opacity")]
-        //[Description("Opacity of gear icons")]
-        //[Slider(0, 1)]
-        //public float gearOpacity = 0.8f;
-
-        [Section("Gear")]
+        [Name("Gear Icon Opacity")]
+        [Description("Opacity of gear icons")]
+        [Slider(0, 1)]
+        public float gearOpacity = 0.8f;
 
         [Name("Show Arrows")]
         [Description("Show Arrows on radar")]
@@ -138,6 +140,22 @@ namespace MotionTracker
         [Name("Show Lost and Found Box")]
         [Description("Show Lost and Found Box on radar")]
         public bool showLostAndFoundBox = true;
+
+        [Name("Show Salt Deposits")]
+        [Description("Show Salt Deposits on radar")]
+        public bool showSaltDeposit = true;
+
+        [Name("Show Beach Loot")]
+        [Description("Show Beach combing loot on radar")]
+        public bool showBeachLoot = true;
+
+        // TODO: Add debug logging level
+
+        //[Section("Miscellaneous")]
+
+        //[Name("Debug logging level")]
+        //[Description("Set the troubleshooting debug logging level.\n0 = No logging, 1 = a little verbose, 2 = more verbose,\n3 = A Lot Verbose, 4 = A Lot More Verbose,\n5 = Kitchen Sink Verbose!")]
+        //public Settings.DebugLoggingLevel logLevel = Settings.DebugLoggingLevel.No_Logging;
 
         protected override void OnChange(FieldInfo field, object oldValue, object newValue)
         {
@@ -156,7 +174,10 @@ namespace MotionTracker
 
                 Settings.animalScale = new Vector3(Settings.options.animalScale, Settings.options.animalScale, Settings.options.animalScale);
                 Settings.spraypaintScale = new Vector3(Settings.options.spraypaintScale, Settings.options.spraypaintScale, Settings.options.spraypaintScale);
+                Settings.gearScale = new Vector3(Settings.options.gearScale, Settings.options.gearScale, Settings.options.gearScale);
+
                 Settings.animalColor = new Color(1, 1, 1, Settings.options.animalOpacity);
+                Settings.gearColor = new Color(1, 1, 1, Settings.options.gearOpacity);
                 Settings.spraypaintColor = new Color(0.62f, 0.29f, 0.0f, Settings.options.spraypaintOpacity);
             }
         }
@@ -165,11 +186,16 @@ namespace MotionTracker
     internal static class Settings
     {
         public static MotionTrackerSettings options;
+
+        // TODO: Add gear icon scale and opacity
+
         public static Vector3 animalScale;
         public static Vector3 spraypaintScale;
+        public static Vector3 gearScale;
 
         public static Color animalColor;
         public static Color spraypaintColor;
+        public static Color gearColor;
 
         public static bool toggleBool = false;
 
@@ -177,6 +203,11 @@ namespace MotionTracker
         {
             AlwaysOn, Toggle
         };
+
+        //public enum DebugLoggingLevel
+        //{
+        //    No_Logging, A_Little_Verbose, More_Verbose, A_Lot_Verbose, A_Lot_More_Verbose, Kitchen_Sink_Verbose
+        //};
 
         public static void OnLoad()
         {
@@ -186,8 +217,11 @@ namespace MotionTracker
             // TODO: Add gear icon scale and opacity
 
             animalScale = new Vector3(options.animalScale, options.animalScale, options.animalScale);
+            gearScale = new Vector3(options.gearScale, options.gearScale, options.gearScale);
             spraypaintScale = new Vector3(options.spraypaintScale, options.spraypaintScale, options.spraypaintScale);
+
             animalColor = new Color(1, 1, 1, options.animalOpacity);
+            gearColor = new Color(1, 1, 1, options.gearOpacity);
             spraypaintColor = new Color(0.62f, 0.29f, 0.0f, options.spraypaintOpacity);
         }
     }

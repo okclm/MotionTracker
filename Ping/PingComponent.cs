@@ -13,12 +13,15 @@ using static Il2CppParadoxNotion.Services.Logger;
 
 namespace MotionTracker
 {
-	public class PingComponent : MonoBehaviour
+    // CHANGED (Unity 6 fix): Added [RegisterTypeInIl2Cpp] and the required IntPtr constructor.
+    // Unity 6's IL2CppInterop requires any managed MonoBehaviour used with AddComponent or
+    // GetComponent to be explicitly registered, or it throws "no corresponding IL2CPP class pointer".
+    [RegisterTypeInIl2Cpp]
+
+    public class PingComponent : MonoBehaviour
 	{
-        public PingComponent(IntPtr intPtr) : base(intPtr)
-        {
-        }
-               
+        public PingComponent(IntPtr intPtr) : base(intPtr) { }  // CHANGED(Unity 6 fix)
+
         public GameObject attachedGameObject;     
         public GearItem attachedGearItem;     
         public PingManager.AnimalType animalType;
@@ -29,6 +32,10 @@ namespace MotionTracker
         public GameObject iconObject;
         public bool isInitialized = false;
         public Image iconImage;
+
+        public bool isVisible = false;  // This was in the original 1.1.0 but was removed in 1.2.0.  Re-adding as part of the Unity 6.0 fix.
+        // Note: there is also an isVisible in the PingManager class.  But that is for the overall radar visibility.  This is for the individual icon visibility.
+
         float timer = 0f;           // Accumulate the time since last frame so we can do things after the trigger duration is elapsed (triggerTime).
         float triggerTime = 5f;     // Trigger duration.  When the acculated frame time exceeds this value, we do stuff and reset the timer to zero.
 
@@ -98,21 +105,21 @@ namespace MotionTracker
             if (iconObject)
             {
 #if DEBUG
-                if (attachedGearItem)
-                {
-                    //LogMessage("pingComponent.name:attachedGearItem = (" + attachedGearItem.name + ":" + attachedGearItem.m_InstanceID + ")");
-                }
+                //if (attachedGearItem)
+                //{
+                //    LogMessage("pingComponent.name:attachedGearItem = (" + attachedGearItem.name + ":" + attachedGearItem.m_InstanceID + ")");
+                //}
 
-                if (attachedGameObject)
-                {
-                    //LogMessage("pingComponent.name:attachedGameObject = (" + attachedGameObject.name + ":" + attachedGameObject.GetInstanceID() + ")");
-                }
+                //if (attachedGameObject)
+                //{
+                //    LogMessage("pingComponent.name:attachedGameObject = (" + attachedGameObject.name + ":" + attachedGameObject.GetInstanceID() + ")");
+                //}
 
-                if (!attachedGameObject && !attachedGearItem)
-                {
+                //if (!attachedGameObject && !attachedGearItem)
+                //{
 
-                    //LogMessage("pingComponent.name = (" + this.name + ") attachedGearItem and attachedGameObject are both null!");
-                }
+                //    LogMessage("pingComponent.name = (" + this.name + ") attachedGearItem and attachedGameObject are both null!");
+                //}
 #endif
                 GameObject.Destroy(iconObject);
             }
@@ -187,6 +194,14 @@ namespace MotionTracker
                     {
                         return true;
                     }
+                    else if (animalType == PingManager.AnimalType.SaltDeposit && Settings.options.showSaltDeposit)
+                    {
+                        return true;
+                    }
+                    else if (animalType == PingManager.AnimalType.BeachLoot && Settings.options.showBeachLoot)
+                    {
+                        return true;
+                    }
                     else
                     {
                         return false;
@@ -206,20 +221,20 @@ namespace MotionTracker
             if (pingComponent != null)
             {
 #if DEBUG
-                if (pingComponent.attachedGearItem)
-                {
-                    //pingComponent.LogMessage("pingComponent.name:attachedGearItem = (" + pingComponent.name + ":" + pingComponent.attachedGearItem.m_InstanceID + ")");
-                }
+                //if (pingComponent.attachedGearItem)
+                //{
+                //    pingComponent.LogMessage("pingComponent.name:attachedGearItem = (" + pingComponent.name + ":" + pingComponent.attachedGearItem.m_InstanceID + ")");
+                //}
                 
-                if (pingComponent.attachedGameObject)
-                {
-                    //pingComponent.LogMessage("pingComponent.name:attachedGameObject = (" + pingComponent.name + ":" + pingComponent.attachedGameObject.GetInstanceID() + ")");
-                }
+                //if (pingComponent.attachedGameObject)
+                //{
+                //    pingComponent.LogMessage("pingComponent.name:attachedGameObject = (" + pingComponent.name + ":" + pingComponent.attachedGameObject.GetInstanceID() + ")");
+                //}
 
-                if (!pingComponent.attachedGameObject && !pingComponent.attachedGearItem)
-                {
-                    //pingComponent.LogMessage("pingComponent.name = (" + pingComponent.name + ") attachedGearItem and attachedGameObject are both null!");
-                }
+                //if (!pingComponent.attachedGameObject && !pingComponent.attachedGearItem)
+                //{
+                //    pingComponent.LogMessage("pingComponent.name = (" + pingComponent.name + ") attachedGearItem and attachedGameObject are both null!");
+                //}
 #endif
 
                 pingComponent.DeleteIcon();
@@ -229,7 +244,7 @@ namespace MotionTracker
             {
 #if DEBUG
                 // pingComponent is null.  Can't use LogMessage because pingComponent is null.  So, use MelonLogger.Msg instead.    
-                // MelonLogger.Msg("PingComponent.cs:ManualDelete.199 pingComponent is NULL so no delete.");
+                //MelonLogger.Msg("PingComponent.cs:ManualDelete.240 pingComponent is NULL so no delete.");
 #endif
             }
         }
@@ -241,7 +256,7 @@ namespace MotionTracker
             if (!canvasGroup)   // canvasGroup is null.  So return.
             {
 #if DEBUG
-                // LogMessage("canvasGroup null so not setting visibity (" + visibility + ") for pingComponent.name = (" + this.name + ")");
+                //LogMessage("canvasGroup null so not setting visibity (" + visibility + ") for pingComponent.name = (" + this.name + ")");
                 //LogMessage("canvasGroup null so not setting visibity (" + visibility + ") for pingComponent.name = (" + this.name + ":" + this.GetInstanceID() + ")");
 #endif
                 return; 
@@ -264,9 +279,9 @@ namespace MotionTracker
                 }
 
 #if DEBUG
-                if (animalType == PingManager.AnimalType.Coal)
+                if (animalType == PingManager.AnimalType.BeachLoot)
                 {
-                   // LogMessage("Setting canvasGroup.alpha = 1f for pingComponent.name = (" + this.name + ":" + this.GetInstanceID() + ")");
+                    //LogMessage("Setting canvasGroup.alpha = 1f for pingComponent.name = (" + this.name + ":" + this.GetInstanceID() + ")");
                     // LogMessage("Setting canvasGroup.alpha = 1f for pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ")");
                 }
 #endif 
@@ -274,10 +289,10 @@ namespace MotionTracker
             else
             {   // Not allowed to show or visibility is false
 #if DEBUG
-                if (animalType == PingManager.AnimalType.Coal)
+                if (animalType == PingManager.AnimalType.BeachLoot)
                 {
                     // LogMessage("Setting canvasGroup.alpha = 0f for pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ")");
-                   // LogMessage("Setting canvasGroup.alpha = 0f for pingComponent.name = (" + this.name + ":" + this.GetInstanceID() + ")");
+                    //LogMessage("Setting canvasGroup.alpha = 0f for pingComponent.name = (" + this.name + ":" + this.GetInstanceID() + ")");
                 }
 #endif
                 try
@@ -297,16 +312,43 @@ namespace MotionTracker
         public void Initialize(PingManager.AnimalType type)
         {
 #if DEBUG
-            // LogMessage("Initialize pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ")");
+            if ((type == PingManager.AnimalType.BeachLoot)
+                || (type == PingManager.AnimalType.Arrow)
+                || (type == PingManager.AnimalType.RawFish)
+                )   // Throttling logging to BeachLoot, Arrow, or RawFish for now.
+            {
+                LogMessage("Initialize pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ") activeSelf=" + this.gameObject.activeSelf + " for AnimalType " + type
+                    + " at [" + this.gameObject.transform.position.x + "," + gameObject.transform.position.y + "," + gameObject.transform.position.z + "].");
+            }
+            //LogMessage("Initialize pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ") for " + type + ".");
 #endif
 
-            attachedGameObject = this.gameObject;
-            animalType = type;
-            assignedCategory = PingCategory.Animal;
+            if (this.gameObject.activeSelf)
+            {
+#if DEBUG
+                LogMessage("Initializing pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ") activeSelf=" + this.gameObject.activeSelf + " for AnimalType " + type
+                    + " at [" + this.gameObject.transform.position.x + "," + gameObject.transform.position.y + "," + gameObject.transform.position.z + "].");
+#endif
+                attachedGameObject = this.gameObject;
+                animalType = type;
+                assignedCategory = PingCategory.Animal;
 
-            CreateIcon();
+                CreateIcon();
 
-            isInitialized = true;
+                isInitialized = true;
+
+                // CHANGED (required fix): Added isVisible = true.
+                // isVisible defaults to false and nothing ever called SetVisible(true) to flip it.
+                // The Update() loop gates on isVisible, so without this, UpdateLocatableIcons()
+                // was never called and no icons ever moved or appeared on the radar.
+                isVisible = true;
+            }
+            else
+            {
+#if DEBUG
+                LogMessage("Not initializing pingComponent.name = (" + this.name + ":" + this.gameObject.GetInstanceID() + ") activeSelf=" + this.gameObject.activeSelf + " for AnimalType " + type + ".  GameObject is not active.");
+#endif
+            }
         }
 
         [HideFromIl2Cpp]
@@ -320,6 +362,8 @@ namespace MotionTracker
             CreateIcon();
 
             isInitialized = true;
+            // CHANGED (required fix): Same isVisible = true fix as the animal overload above.
+            isVisible = true;
         }
 
         [HideFromIl2Cpp]
@@ -341,7 +385,33 @@ namespace MotionTracker
                     {
                         timer += Time.deltaTime;    // Accumulated time since we last logged stuff
 
-                        // Address stuff displaying on radar that aren't there.
+                        // Can we check for GearItems that have a PingComponent but the GeartItem is not active?  If so, then the delete PingComponent?
+                        // Nope.  When the GameObject is deactivated, the PingComponent is deactivated too.  So we can't check for it.
+
+                        // There is a situation where a beach combing item is spawned and then inactivated.  The spawned item is seen and a PingComponent is added to it.
+                        // Then the spawned item is deactivated.  The PingComponent is not deleted.  So the item is not seen but the PingComponent is still there on the radar!
+                        // Let's see if we can clean up for this situation.
+                        // PingComponent pingComponent = this.gameObject.GetComponent<PingComponent>();
+                        if (this.name.Contains("GEAR_RawCohoSalmon", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            //LogMessage("PingComponent Update event: (" + this.name + ":" + this.GetInstanceID() + ") GameObject (" + this.gameObject.name + ":" + this.gameObject.GetInstanceID() + ") is active.");
+                            GearItem gi = this.attachedGearItem;
+                            if (gi != null)
+                            {
+                                // Check if the GameObject is active
+                                if (!gi.isActiveAndEnabled)
+                                {
+                                    // Inactive GearItem.  So delete the PingComponent.
+    #if DEBUG
+                                    LogMessage("!!PingComponent Update event: (" + this.name + ":" + this.GetInstanceID() + ") GearItem (" + gi.name + ":" + gi.GetInstanceID() + ") is inactive.  Deleting PingComponent.");
+    #endif
+                                    ManualDelete(this);
+                                    return;
+                                }
+                            }
+                        }
+
+                        // Address AI-based stuff (animals) displaying on radar that aren't there.
                         BaseAi baseAi = gameObject.GetComponent<BaseAi>();
                         if (baseAi != null)
                         {
@@ -410,10 +480,33 @@ namespace MotionTracker
                 }
                 else if (assignedCategory == PingCategory.Animal)
                 {
-                    if (iconImage.color != Settings.animalColor || rectTransform.localScale != Settings.animalScale)    // Should this be using animalScale instead of sprayScale?
+                    // TODO: Add gear icon scale and opacity
+
+                    // Ok, so this is an "animal."  But it could be a GearItem like an arrow or coal.
+                    // Because we used the animal stuff to extend to gears.
+                    // So, we need to check the type of animal and set the color and scale accordingly.
+
+                    // Gear stuff first because there are fewer to check.
+                    if (( this.animalType == PingManager.AnimalType.Arrow) 
+                        || (this.animalType == PingManager.AnimalType.Coal) 
+                        || (this.animalType == PingManager.AnimalType.LostAndFoundBox)
+                        || (this.animalType == PingManager.AnimalType.SaltDeposit)
+                        || (this.animalType == PingManager.AnimalType.BeachLoot)
+                        || (this.animalType == PingManager.AnimalType.RawFish))
                     {
-                        rectTransform.localScale = Settings.animalScale;
-                        iconImage.color = Settings.animalColor;
+                        if (iconImage.color != Settings.gearColor || rectTransform.localScale != Settings.gearScale)
+                        {
+                            rectTransform.localScale = Settings.gearScale;
+                            iconImage.color = Settings.gearColor;
+                        }
+                    }
+                    else // Must be an actual animal and not a gear item.
+                    {
+                        if (iconImage.color != Settings.animalColor || rectTransform.localScale != Settings.animalScale)
+                        {
+                            rectTransform.localScale = Settings.animalScale;
+                            iconImage.color = Settings.animalColor;
+                        }
                     }
 
                     if (this.name.Contains("Arrow"))
@@ -422,9 +515,9 @@ namespace MotionTracker
                     }
 
 #if DEBUG
-                    if ((timer > triggerTime) && (name.Contains("RawFish")))
+                    if ((timer > triggerTime) && (name.Contains("SaltDeposit")))
                     {
-                        //LogMessage("Radar RawFish updating (" + this.name + ":" + this.attachedGearItem.m_InstanceID + ") position is (" + this.transform.position + ")");
+                        //LogMessage("Radar SaltDeposit updating (" + this.name + ":" + this.GetInstanceID() + ") position is (" + this.transform.position + ")");
                     }
 
                     //if (timer > triggerTime)
@@ -456,10 +549,9 @@ namespace MotionTracker
             else
             {
 #if DEBUG
-                if ((timer > triggerTime) && (name.Contains("RawFish")))
+                if ((timer > triggerTime) && (name.Contains("SaltDeposit")))
                 {
-                    //LogMessage("GearItem:ID (" + this.attachedGearItem.name + ":" + this.attachedGearItem.m_InstanceID + ") assigned category is Animal.RawFish and setting to NOT visible.");
-                    // LogMessage("(" + name + ":" + GetInstanceID() + ") Setting visible to FALSE.");   // Lot of data!
+                    //LogMessage("GearItem:ID (" + this.name + ":" + this.attachedGameObject.GetInstanceID() + ") assigned category is Animal.SaltDeposit and setting to NOT visible.");
                 }
 #endif
                 SetVisible(false);
@@ -475,11 +567,11 @@ namespace MotionTracker
             var scale = radarSize / Settings.options.detectionRange;
 
 #if DEBUG
-            if (name.Contains("RawFish"))
+            if (name.Contains("SaltDeposit"))
             {
                 if (timer > triggerTime)
                 {
-                    //LogMessage("(" + this.name + ":" + this.attachedGearItem.GetInstanceID() + ") distance to player=" + iconLocation + " radarSize=" + radarSize + " scale=" + scale + " scaled iconLocation=" + iconLocation * scale);
+                    //LogMessage("(" + this.name + ":" + this.GetInstanceID() + ") distance to player=" + iconLocation + " radarSize=" + radarSize + " scale=" + scale + " scaled iconLocation=" + iconLocation * scale);
                 }
             }
 #endif
@@ -513,11 +605,11 @@ namespace MotionTracker
             }
 
 #if DEBUG
-            if (this.name.Contains("Coal"))
+            if (this.name.Contains("SaltDeposit"))
             {
                 if (timer > triggerTime)
                 {
-                    //LogMessage("GameObject:ID (" + this.attachedGearItem.name + ":" + this.gameObject.GetInstanceID() + ") assigned category is Animal.Coal and final distance(iconLocation) = " + iconLocation);
+                    //LogMessage("GameObject:ID (" + this.attachedGameObject.name + ":" + this.gameObject.GetInstanceID() + ") assigned category is Animal.SaltDeposit and final distance(iconLocation) = " + iconLocation);
                 }
             }
 #endif
@@ -527,11 +619,11 @@ namespace MotionTracker
                 // Make sure it is not shown outside the radar
                 iconLocation = Vector2.ClampMagnitude(iconLocation, radarSize);
 #if DEBUG
-                if (this.name.Contains("Coal"))
+                if (this.name.Contains("SaltDeposit"))
                 {
                     if (timer > triggerTime)
                     {
-                        //LogMessage("GameObject:ID (" + this.gameObject.name + ":" + this.attachedGearItem.GetInstanceID() + ") inside radar display. ClampMagnitude distance(iconLocation) = " + iconLocation);
+                        //LogMessage("GameObject:ID (" + this.gameObject.name + ":" + this.attachedGameObject.GetInstanceID() + ") inside radar display. ClampMagnitude distance(iconLocation) = " + iconLocation);
                     }
                 }
 #endif
@@ -544,7 +636,7 @@ namespace MotionTracker
                 // if you delete here for animals like the cougar, then the cougar will not be visible on the radar.
                 // And, the cougar will NOT reappear on the radar when it comes back into the radar reporting area because we rely on the BaseAi-"Start" event to detect the existence of the cougar.
                 // So, still have an issue with orphaned cougar icons on the radar.
-                // Ok... I don't think we want to delete anything at this point.  Just return false.  The calling code will hide the icon if we retrun false.
+                // Ok... I don't think we want to delete anything at this point.  Just return false.  The calling code will hide the icon if we return false.
 
                 //if (this.name.Contains("Arrow"))    // Only delete if it's an arrow-ish thing...
                 //    {
@@ -552,7 +644,7 @@ namespace MotionTracker
                 //}
 
 #if DEBUG
-                if (this.name.Contains("Coal"))
+                if (this.name.Contains("SaltDeposit"))
                 //if (assignedCategory == PingCategory.Animal)    // Leave the spraypaint decals alone...
                 {
                     if (timer > triggerTime)

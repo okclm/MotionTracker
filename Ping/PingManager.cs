@@ -17,7 +17,7 @@ namespace MotionTracker
         public PingManager(IntPtr intPtr) : base(intPtr)
         {
         }
-        public enum AnimalType { Crow, Rabbit, Stag, Doe, Wolf, Timberwolf, Bear, Moose, PuffyBird, Cougar, Arrow, Coal, RawFish, LostAndFoundBox };
+        public enum AnimalType { Crow, Rabbit, Stag, Doe, Wolf, Timberwolf, Bear, Moose, PuffyBird, Cougar, Arrow, Coal, RawFish, LostAndFoundBox, SaltDeposit, BeachLoot };
 
         public static bool isVisible = false;
         public static PingManager? instance;
@@ -61,7 +61,7 @@ namespace MotionTracker
                 Destroy(icon.gameObject);
             }
 #if DEBUG
-            // LogMessage("Clearing the iconPosition dictionary so we can start fresh with new icons.");
+            LogMessage("Clearing the iconPosition dictionary so we can start fresh with new icons.");
 #endif 
             iconPosition.Clear();  // Clear the iconPosition dictionary so we can start fresh with new icons.
 #if DEBUG
@@ -81,18 +81,21 @@ namespace MotionTracker
             {
                 int i = 0;
                 Image[] icons = iconContainer.transform.GetComponentsInChildren<Image>();                        // What sort of magic is this!?  Get all the Image components in the iconContainer.
-                // LogMessage("PingManager Update. iconContainer has " + icons.Count() + " icon elements.");
+                //LogMessage("PingManager Update. iconContainer has " + icons.Count() + " icon elements.");
 
                 foreach (Image icon in icons)
                 {
                     if (icon != null)
                     {
-                        //#if DEBUG
-                        //                        // Show ALL icons in the debug log.  Lot of data.
-                        //                        LogMessage("iconContainer icon # " + i + " Icon:ID (" + icon.name + ":" + icon.GetInstanceID() + ") " +
-                        //                                            "GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") " +
-                        //                                            "GameObject:Position (" + icon.gameObject.transform.position + ")");
-                        //#endif
+#if DEBUG
+                        // Show ALL BeachLoot icons in the debug log.  Lot of data.
+                        if (icon.name.Contains("Beachloot", StringComparison.CurrentCultureIgnoreCase))      // Limit this to beach loot.
+                        {
+                            //LogMessage("iconContainer icon # " + i + " Icon:ID (" + icon.name + ":" + icon.GetInstanceID() + ") " +
+                            //                "GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") " +
+                            //                "GameObject:Position (" + icon.gameObject.transform.position + ")");
+                        }
+#endif
 
                         // Use this to limit type of icon we are tracking / cleaning up  (i.e. Crows).
                         // Only use objects that move within the scene AND are having issues with orphaned icons.
@@ -137,26 +140,21 @@ namespace MotionTracker
                                 stuckPositionCounter += 1;  // This is the number of times ANY icon has not moved since the last frame.  Not very useful...
 
                                 // Remove entry in iconPosition dictionary and delete the icon.
-#if DEBUG
                                 //LogMessage("iconContainer icon # " + i + " Icon:ID (" + icon.name + ":" + icon.GetInstanceID() + ") " +
                                 //                    "GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") " +
                                 //                    "GameObject:Position (" + icon.gameObject.transform.position + ") stuckPositionCounter=" + stuckPositionCounter);
-                                //LogMessage("Stale icon position detected!  icon # " + i + " GameObject:Position (" + icon.gameObject.name + ":" + icon.gameObject.transform.position + ") is the same as last position (" + lastTransformPosition + ") so deleting it.");
+                                LogMessage("Stale icon position detected!  icon # " + i + " GameObject:Position (" + icon.gameObject.name + ":" + icon.gameObject.transform.position + ") is the same as last position (" + lastTransformPosition + ") so deleting it.");
                                 //LogMessage("Cleaning up iconPosition dictionary.  Total key/value pairs in iconPosition dictionary is : " + iconPosition.Count);
-#endif
+
                                 if (iconPosition.Remove(icon.gameObject.GetInstanceID()))
                                 {
-#if DEBUG
-                                    //LogMessage("Removed key/value (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") from iconPosition dictionary.");
+                                    LogMessage("Removed key/value (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") from iconPosition dictionary.");
                                     //LogMessage("Total key/value pairs in iconPosition dictionary (after deleting entry) is : " + iconPosition.Count);
-#endif
                                 }
                                 else
                                 {
-#if DEBUG
                                     //LogMessage("Failed to remove key/value pair (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") from iconPosition dictionary.");
                                     //LogMessage("Total key/value pairs in iconPosition dictionary (after failed entry deletion) is : " + iconPosition.Count);
-#endif
                                 }
 
                                 // I don't think there is a pingComponent to delete.  The icon is orphaned because the pingComponent is gone.
@@ -171,26 +169,20 @@ namespace MotionTracker
                                 stuckPositionCounter = 0;  // Reset the number of times ANY icon has not moved since the last frame.
                                 if (iconPosition.ContainsKey(icon.gameObject.GetInstanceID()))
                                 {
-#if DEBUG
                                     //LogMessage("Icon # " + i + " GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") is in iconPosition dictionary.");
                                     //LogMessage("Total key/value pairs in iconPosition dictionary is : " + iconPosition.Count + ".  Updating iconPosition entry for GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ")");
-#endif
+
                                     // record latest position of icon in iconPosition dictionary
                                     iconPosition[icon.gameObject.GetInstanceID()] = icon.gameObject.transform.position;
-#if DEBUG
+
                                     //LogMessage("Total key/value pairs in iconPosition dictionary (after updating entry) is : " + iconPosition.Count);
-#endif
                                 }
                                 else
                                 {
-#if DEBUG
                                     //LogMessage("Icon # " + i + " GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ") is NOT in iconPosition dictionary.");
                                     //LogMessage("Total key/value pairs in iconPosition dictionary is : " + iconPosition.Count + ".  Adding iconPosition entry for GameObject:ID (" + icon.gameObject.name + ":" + icon.gameObject.GetInstanceID() + ")");
-#endif
                                     iconPosition[icon.gameObject.GetInstanceID()] = icon.gameObject.transform.position;     // Add the icon to the iconPosition dictionary.
-#if DEBUG
                                     //LogMessage("Total key/value pairs in iconPosition dictionary (after adding entry) is : " + iconPosition.Count);
-#endif
                                 }
                             }
                         }
@@ -293,7 +285,7 @@ namespace MotionTracker
 
             // If the user toggles the MotionTracker (On/Off), let's clear all the radar icons to nuke any lingering zombies.
             // Turns out the icons are only created as part of entering the scene.  So deleting them here and they don't return unless you bounce out/in to a scene.
-            // Probably need to see if we can deternine individual zombie icons and only delete the zombies.
+            // Probably need to see if we can determine individual zombie icons and only delete the zombies.
             //if (PingManager.instance)
             //{
             //    PingManager.instance.ClearIcons();
@@ -320,6 +312,7 @@ namespace MotionTracker
             
             SetOpacity(Settings.options.opacity);
             Scale(Settings.options.scale);
+            // Can we set the location from settings?
 
             trackerCanvas.enabled = true;
             isVisible = true;

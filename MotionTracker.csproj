@@ -3,8 +3,9 @@
 
     <PropertyGroup>
         <!--This needs to be changed for the mod to compile.-->
-        <TheLongDarkPath>D:\Program Files (x86)\Steam\steamapps\common\TheLongDark</TheLongDarkPath>
-    </PropertyGroup>
+		<TheLongDarkPath>D:\Program Files (x86)\Steam\steamapps\common\TheLongDark</TheLongDarkPath> 
+		<!--<TheLongDarkPath>D:\TLD_Archives\TLD 2.44</TheLongDarkPath>-->    
+	</PropertyGroup>
 
     <PropertyGroup>
         <!--This is the .NET version the mod will be compiled with. Don't change it.-->
@@ -58,7 +59,14 @@
     </ItemGroup>
 
     <!--This is the list of assemblies that the mod references. Most of these are unnecessary for normal mods, but are included here for completeness.-->
-    <ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="STBlade.Modding.TLD.Il2CppAssemblies.Windows" Version="2.51.0" />
+		<Reference Include="ModSettings">
+			<HintPath>$(ModsPath)\ModSettings.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	
+	<!--<ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass">
           <HintPath>D:\Program Files (x86)\Steam\steamapps\common\TheLongDark\MelonLoader\Il2CppAssemblies\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
@@ -118,7 +126,7 @@
         <Reference Include="UnityEngine.UIModule">
           <HintPath>D:\Program Files (x86)\Steam\steamapps\common\TheLongDark\MelonLoader\Il2CppAssemblies\UnityEngine.UIModule.dll</HintPath>
         </Reference>
-    </ItemGroup>
+    </ItemGroup>-->
     <ItemGroup>
       <Compile Update="Properties\Resources.Designer.cs">
         <DesignTime>True</DesignTime>
