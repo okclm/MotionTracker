@@ -8,7 +8,7 @@ namespace MotionTracker
 {
     internal class MotionTrackerSettings : JsonModSettings
     {
-        //[Section("General - Version: 1.2.0")]
+        //[Section("General - Version: 1.4.0")]
         //[Section("General - Version: " + Assembly.GetExecutingAssembly().GetName().Version)]
         [Section("General")]
 
@@ -42,6 +42,11 @@ namespace MotionTracker
         [Description("Opacity of motion detector overlay")]
         [Slider(0, 1)]
         public float opacity = 0.7f;
+
+        [Name("Radar location")]
+        [Description("Location of motion detector overlay")]
+        // [Slider(0, 3)]
+        public Settings.RadarLocations radarLocation = Settings.RadarLocations.UpperLeft;
 
         [Section("Spraypaint")]
 
@@ -169,6 +174,7 @@ namespace MotionTracker
             {  
                 PingManager.instance.SetOpacity(Settings.options.opacity);
                 PingManager.instance.Scale(Settings.options.scale);
+                PingManager.instance.SetLocation(Settings.options.radarLocation);
 
                 // TODO: Add gear icon scale and opacity
 
@@ -202,6 +208,11 @@ namespace MotionTracker
         public enum DisplayStyle
         {
             AlwaysOn, Toggle
+        };
+
+        public enum RadarLocations
+        {
+            UpperLeft, UpperRight, LowerLeft, LowerRight
         };
 
         //public enum DebugLoggingLevel

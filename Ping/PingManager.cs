@@ -313,6 +313,7 @@ namespace MotionTracker
             SetOpacity(Settings.options.opacity);
             Scale(Settings.options.scale);
             // Can we set the location from settings?
+            SetLocation(Settings.options.radarLocation);
 
             trackerCanvas.enabled = true;
             isVisible = true;
@@ -331,6 +332,47 @@ namespace MotionTracker
             if (backgroundImage)
             {
                 backgroundImage.color = new Color(1f, 1f, 1f, opacity);
+            }
+        }
+        // Change the accessibility of the SetLocation method to internal to match the accessibility of Settings.RadarLocations
+        internal void SetLocation(Settings.RadarLocations location)
+        {
+            if (radarUI)
+            {
+                float screenRatio = (float)Screen.width / (float)Screen.height; // Thank you Waltz via Clothing Tweaker 2!
+                int screenWidth = Screen.currentResolution.m_Width;
+                int screenHeight = Screen.currentResolution.m_Height;
+                int radarWidth = (int)(radarUI.rect.width * radarUI.localScale.x);  // 250?
+                int radarHeight = (int)(radarUI.rect.height * radarUI.localScale.y);    // 250?
+                LogMessage($"Screen Resolution: {screenWidth}x{screenHeight} (Ratio: {screenRatio})");
+                LogMessage($"Radar Size: {radarWidth}x{radarHeight}");
+
+                Vector3 pos = radarUI.position;
+
+                // Set the location of the radar based on the selected option
+                switch (location)
+                {
+                    case Settings.RadarLocations.UpperLeft:
+                        pos.x = 66.6666f;  // Set the x position to 66.6666f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        pos.y = 1373.333f;  // Set the y position to 1373.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        radarUI.position = pos;
+                        break;
+                    case Settings.RadarLocations.UpperRight:
+                        pos.x = 2100f;  // Set the x position to 2100f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        pos.y = 1373.333f;  // Set the y position to 1373.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        radarUI.position = pos;
+                        break;
+                    case Settings.RadarLocations.LowerLeft:
+                        pos.x = 66.6666f;  // Set the x position to 66.6666f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        pos.y = 573.333f;  // Set the y position to 573.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        radarUI.position = pos;
+                        break;
+                    case Settings.RadarLocations.LowerRight:
+                        pos.x = 2100f;  // Set the x position to 2100f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        pos.y = 573.333f;  // Set the y position to 573.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        radarUI.position = pos;
+                        break;
+                }
             }
         }
     }

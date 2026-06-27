@@ -61,7 +61,8 @@ namespace MotionTracker
 
     public class MyLogger
     {
-        // public static void LogMessage(string message, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string? caller = null)
+        // Log to the Melonloader log file with the calling code filename, calling method, and line number.  This is a debug log for development purposes.
+        // Note that we only log if this is the Debug compile.  This is to avoid the log file being filled with debug data when the mod is compiled for release.
         public static void LogMessage(string message, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string? caller = null, [CallerFilePath] string? filepath = null)
 
         {
