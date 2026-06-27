@@ -10,6 +10,12 @@ Adds a minimap that can show animals and spraypaint markings
 
 # Changelog
 
+v1.4.0
+- Added a new option to control where on the screen the minimap is displayed
+
+v1.3.0
+- TLD 2.5, Unity 6 upgrade
+
 v1.2.0
 - Added Cougar
 - Added Arrows, Arrow shafts, and Arrow heads
