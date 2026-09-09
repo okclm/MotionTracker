@@ -209,7 +209,7 @@ namespace MotionTracker
                 timer = 0f;
                 //LogMessage("timer reset to 0 (" + timer + ") and triggerTime = (" + triggerTime + ")");
             }
-        }
+        }   // End of Update
 
         public bool AllowedToBeVisible()
         {           
@@ -263,8 +263,8 @@ namespace MotionTracker
             }
           
             return true;
-        }
-       
+        }   // End of AllowedToBeVisible
+
         private void SetVisible(bool visible)
         {
             if (isVisible == visible)
@@ -282,15 +282,7 @@ namespace MotionTracker
                 trackerCanvas.enabled = false;
                 isVisible = false;
             }
-
-            // If the user toggles the MotionTracker (On/Off), let's clear all the radar icons to nuke any lingering zombies.
-            // Turns out the icons are only created as part of entering the scene.  So deleting them here and they don't return unless you bounce out/in to a scene.
-            // Probably need to see if we can determine individual zombie icons and only delete the zombies.
-            //if (PingManager.instance)
-            //{
-            //    PingManager.instance.ClearIcons();
-            //}
-        }
+        }   // End of SetVisible
 
         public void Awake()
         {
@@ -344,33 +336,54 @@ namespace MotionTracker
                 int screenHeight = Screen.currentResolution.m_Height;
                 int radarWidth = (int)(radarUI.rect.width * radarUI.localScale.x);  // 250?
                 int radarHeight = (int)(radarUI.rect.height * radarUI.localScale.y);    // 250?
+#if DEBUG
                 LogMessage($"Screen Resolution: {screenWidth}x{screenHeight} (Ratio: {screenRatio})");
                 LogMessage($"Radar Size: {radarWidth}x{radarHeight}");
-
+#endif
                 Vector3 pos = radarUI.position;
 
                 // Set the location of the radar based on the selected option
                 switch (location)
                 {
                     case Settings.RadarLocations.UpperLeft:
-                        pos.x = 66.6666f;  // Set the x position to 66.6666f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
-                        pos.y = 1373.333f;  // Set the y position to 1373.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.x = 66.6666f;  // Set the x position to 66.6666f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.y = 1373.333f;  // Set the y position to 1373.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        // Set the anchor and pivot to the upper left corner
                         radarUI.position = pos;
+                        radarUI.anchorMin = new Vector2(0f, 1f);
+                        radarUI.anchorMax = new Vector2(0f, 1f);
+                        radarUI.pivot = new Vector2(0f, 1f);
+                        radarUI.anchoredPosition = Vector2.zero;
                         break;
                     case Settings.RadarLocations.UpperRight:
-                        pos.x = 2100f;  // Set the x position to 2100f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
-                        pos.y = 1373.333f;  // Set the y position to 1373.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.x = 2100f;  // Set the x position to 2100f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.y = 1373.333f;  // Set the y position to 1373.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        // Set the anchor and pivot to the upper right corner
                         radarUI.position = pos;
+                        radarUI.anchorMin = new Vector2(1f, 1f);
+                        radarUI.anchorMax = new Vector2(1f, 1f);
+                        radarUI.pivot = new Vector2(1f, 1f);
+                        radarUI.anchoredPosition = Vector2.zero;
                         break;
                     case Settings.RadarLocations.LowerLeft:
-                        pos.x = 66.6666f;  // Set the x position to 66.6666f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
-                        pos.y = 573.333f;  // Set the y position to 573.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.x = 66.6666f;  // Set the x position to 66.6666f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.y = 573.333f;  // Set the y position to 573.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
                         radarUI.position = pos;
+                        // Set the anchor and pivot to the lower left corner
+                        radarUI.anchorMin = new Vector2(0f, 0f);
+                        radarUI.anchorMax = new Vector2(0f, 0f);
+                        radarUI.pivot = new Vector2(0f, 0f);
+                        radarUI.anchoredPosition = Vector2.zero;
                         break;
                     case Settings.RadarLocations.LowerRight:
-                        pos.x = 2100f;  // Set the x position to 2100f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
-                        pos.y = 573.333f;  // Set the y position to 573.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.x = 2100f;  // Set the x position to 2100f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
+                        //pos.y = 573.333f;  // Set the y position to 573.333f. But, can this be dynamic based on the screen resolution?  I don't know how to do that yet.
                         radarUI.position = pos;
+                        // Set the anchor and pivot to the lower right corner
+                        radarUI.anchorMin = new Vector2(1f, 0f);
+                        radarUI.anchorMax = new Vector2(1f, 0f);
+                        radarUI.pivot = new Vector2(1f, 0f);
+                        radarUI.anchoredPosition = Vector2.zero;
                         break;
                 }
             }

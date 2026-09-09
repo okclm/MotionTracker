@@ -8,7 +8,7 @@ namespace MotionTracker
 {
     internal class MotionTrackerSettings : JsonModSettings
     {
-        //[Section("General - Version: 1.4.0")]
+        //[Section("General - Version: 1.4.1")]
         //[Section("General - Version: " + Assembly.GetExecutingAssembly().GetName().Version)]
         [Section("General")]
 

@@ -10,6 +10,9 @@ Adds a minimap that can show animals and spraypaint markings
 
 # Changelog
 
+v1.4.1
+- Fixed a bug where the minimap would not display correctly on some resolutions
+
 v1.4.0
 - Added a new option to control where on the screen the minimap is displayed
 
